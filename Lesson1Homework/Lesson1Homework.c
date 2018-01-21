@@ -38,6 +38,7 @@ int main() {
 			Solution2();
 			break;
 		case 3:
+			Solution3();
 			break;
 		case 4:
 			break;
@@ -190,8 +191,17 @@ void Solution3() {
 
 	for (i = 1; i < size; i++) {
 		if (array[i] != 0) {
-
+			for (j = i + 1; j < size; j++) {
+				if (array[j] != 0 && array[j] % array[i] == 0)
+					array[j] = 0;
+			}
 		}
 	}
 
+	for (i = 0; i < size; i++) {
+		if (array[i] != 0)
+			printf("%u ", array[i]);
+	}
+
+	printf("\n");
 }
