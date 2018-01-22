@@ -254,7 +254,7 @@ void Solution4() {
 	//		printf("%u ", array[i]);
 	//}
 
-	printf("TIME: \n sec");
+	printf("TIME: \n");
 	printf("%lf", (double)(t2 - t1) / CLOCKS_PER_SEC);
 	printf("\n");
 }
