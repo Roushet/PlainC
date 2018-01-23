@@ -6,6 +6,8 @@
 #include <limits.h>
 #include <stdint.h>
 
+//Владимир Евдокимов
+
 struct Field
 {
 	unsigned x, y;
@@ -15,21 +17,14 @@ void Solution1();
 void Solution2();
 void Solution3();
 void Solution4();
-void Solution5();
-void Solution6();
 
 int CheckFieldColors(struct Field F1, struct Field F2);
 int isAutomorphic(unsigned num);
 
 int main() {
 
-	//1900 MB
-	//int Mb = 0;
-	//while (malloc(1 << 20)) ++Mb;
-	//printf("Allocated %d Mb total\n", Mb);
-
-	int sel = 0;
-	printf("Hello! Welcome to Lesson 1 homework\n\nUse numbers between 1 and 6 to select an excercice. Enter 0 to exit.\n\n");
+	unsigned sel = 0;
+	printf("Hello! Welcome to Lesson 1 homework\n\nUse numbers between 1 and 4 to select an excercice. Enter 0 to exit.\n\n");
 	do {
 		printf("Please select an excercise : \n");
 		scanf("%i", &sel);
@@ -49,16 +44,12 @@ int main() {
 			Solution4();
 			break;
 		default:
-			printf("Please use numbers between 1 and 6\n");
+			printf("Please use numbers between 1 and 4\n0 for exit.\n");
 			break;
 		}
 	} while (sel != 0);
 
-	printf("Program will now close.");
-
 	return 0;
-
-
 }
 
 //1. *С клавиатуры вводятся числовые координаты двух полей шахматной доски(x1, y1, x2, y2).
@@ -74,11 +65,11 @@ void Solution1() {
 
 	do {
 		scanf("%u", &F1.x);
-	} while (F1.x > 8);
+	} while (F1.x < 1 && F1.x > 8);
 
 	do {
 		scanf("%u", &F1.y);
-	} while (F1.x < 1 && F1.x >8);
+	} while (F1.y < 1 && F1.y >8);
 
 	printf("F1 x %u y %u \n", F1.x, F1.y);
 
@@ -216,10 +207,19 @@ void Solution3() {
 //***Рассчитать время нахождения этого числа.
 
 void Solution4() {
-	//4 294 967 295
 
+	//Проверяем сколько памяти отдаёт система
+	//1900 MB x86
+	int Mb = 0;
+	//2 в степени 20 - это 1 048 576 (т.е. 1 мегабайт)
+	while (malloc(1 << 20)) ++Mb;
+	printf("Allocated %d Mb total\n", Mb);
+
+	//UINT_MAX = 4 294 967 295
 	//2 342 502 400
-	unsigned size = 1000000;
+
+	//
+	unsigned size = Mb * 1048576;
 	unsigned * array;
 	unsigned i, j;
 
@@ -234,8 +234,10 @@ void Solution4() {
 	array = (unsigned *)malloc(size * sizeof(unsigned));
 
 	//заполняем массив
-	for (i = 0; i < size; i++)
+	//--- почему-то падает при заполнении массива, хотя все числа нормальные
+	for (i = 0; i < size; i++) {
 		array[i] = i + 1;
+	}
 
 	//проверяем числа в массиве
 
