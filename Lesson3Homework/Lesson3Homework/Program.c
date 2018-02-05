@@ -1,6 +1,6 @@
 //1. Попробовать оптимизировать пузырьковую сортировку.Сравнить количество операций сравнения оптимизированной и 
 //не оптимизированной программы.Написать функции сортировки, которые возвращают количество операций.
-//2. *Реализовать шейкерную сортировку.
+
 //3. Реализовать бинарный алгоритм поиска в виде функции, которой передается отсортированный массив.Функция возвращает 
 //индекс найденного элемента или - 1, если элемент не найден.
 //4. *Подсчитать количество операций для каждой из сортировок и сравнить его с асимптотической сложностью алгоритма.
@@ -14,12 +14,19 @@
 #include <limits.h>
 #include <stdint.h>
 
+//счётчик операций
+unsigned count;
+
 void Solution1();
+void Solution2();
+
 void BubbleSort(unsigned * array, const unsigned N);
-//void Swap(unsigned * a1, unsigned * a2);
+void Swap(unsigned* a1, unsigned* a2);
+unsigned Compare(unsigned a1, unsigned a2);
+void ShakerSort(unsigned* array, const unsigned N);
 
 int main() {
-	printf("%d \n", 1 % 2);
+
 	unsigned sel = 0;
 
 	printf("Hello! Welcome to Lesson 3 homework\n\nUse numbers between 1 and 4 to select an excercice. Enter 0 to exit.\n\n");
@@ -33,7 +40,7 @@ int main() {
 			Solution1();
 			break;
 		case 2:
-			//Solution2();
+			Solution2();
 			break;
 		case 3:
 			//Solution3();
@@ -63,27 +70,43 @@ void Solution1() {
 }
 
 
-void BubbleSort(unsigned * array, const unsigned N)
+void BubbleSort(unsigned* array, const unsigned N)
 {
 	unsigned i, j;
-
-	unsigned temp;
 
 	for (i = 0; i < N; i++)
 	{
 		for (j = 0; j < N - 1; j++)
 		{
-			if (array[j] > array[j + 1]) {
-				temp = array[j];
-				array[j] = array[j + 1];
-				array[j + 1] = temp;
+			if (Compare(array[j], array[j + 1])) {
+				Swap(&array[j], &array[j + 1]);
+
+				//temp = array[j];
+				//array[j] = array[j + 1];
+				//array[j + 1] = temp;
 			}
 		}
 	}
 }
 
-//2. *Реализовать шейкерную сортировку.
+unsigned Compare(unsigned a, unsigned b) {
 
+	count++;
+
+	if (a > b) return 1;
+	else return 0;
+}
+
+void Swap(unsigned* a, unsigned* b) {
+	count++;
+
+	unsigned temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+
+//2. *Реализовать шейкерную сортировку.
 void Solution2() {
 	unsigned arr[10] = { 6, 5, 1, 3, 9, 4, 8 ,7, 2, 0 };
 	unsigned i;
@@ -96,35 +119,38 @@ void Solution2() {
 	printf("\n");
 }
 
-void ShakerSort(unsigned * array, const unsigned N)
+void ShakerSort(unsigned* array, const unsigned N)
 {
 	unsigned i, j;
-
-	unsigned temp;
 	unsigned shaker = 1;
 
 	for (i = 0; i < N; i++)
 	{
-		if (shaker % 2 == 1) {
+		//if (Compare(shaker % 2, 1)) {
 			for (j = 0; j < N - 1; j++)
 			{
-				if (array[j] > array[j + 1]) {
-					temp = array[j];
-					array[j] = array[j + 1];
-					array[j + 1] = temp;
+
+				if (Compare(array[j], array[j + 1])) {
+					Swap(array[j], array[j + 1]);
+
+					//temp = array[j];
+					//array[j] = array[j + 1];
+					//array[j + 1] = temp;
 				}
 			}
-		}
-		else {
-			for (j = N - 1; j > N - 1; j--)
-			{
-				if (array[j] < array[j + 1]) {
-					temp = array[j];
-					array[j] = array[j + 1];
-					array[j + 1] = temp;
-				}
-			}
-		}
+		//}
+		//else {
+		//	for (j = N - 1; j > 0; j--)
+		//	{
+		//		if (Compare(array[j - 1], array[j])) {
+		//			Swap(array[j], array[j - 1]);
+
+		//			//temp = array[j];
+		//			//array[j] = array[j + 1];
+		//			//array[j + 1] = temp;
+		//		}
+		//	}
+		//}
 		shaker++;
 	}
 }
