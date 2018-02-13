@@ -103,23 +103,32 @@ void Solution2() {
 	//	if (*(str1 + i) == '\0') break;
 	//}
 
-	do {
-		i++;
-		printf("%c", *(str1 + i));
-	} while (*(str1 + i) != '\0');
+	//do {
+	//	i++;
+	//	printf("%c", *(str1 + i));
+	//} while (*(str1 + i) != '\0');
 
-	printf("%d \n", i);
+	//printf("%d \n", i);
+
+	Matrix(str1, str2);
 
 	//printf("%d \n", len(str1, str2));
 }
 
 unsigned Matrix(char *str1, char *str2) {
+
 	unsigned len1, len2;
-	
+	unsigned i = 0;
+	unsigned j = 0;
+
+	unsigned lcs = 0;
+	unsigned counter = 0;
+
+	if (*str1 == '\0' || *str2 == '\0')
+		return 0;
+
 	len1 = strLen(str1); //строка
 	len2 = strLen(str2); //столбец
-
-	unsigned i = 0;
 
 	unsigned **mat; //динамический двумерный массив - массив указателей на одномерные массивы
 
@@ -131,10 +140,61 @@ unsigned Matrix(char *str1, char *str2) {
 	//заполняем матрицу
 	//https://foxford.ru/wiki/informatika/naibolshaya-obschaya-podposledovatelnost
 
-	//если буква
+	for (i = 0; i < len1; i++) {
+		for (j = 0; j < len2; j++) {
+			mat[i][j] = 0;
+			//printf("%d  ", mat[i][j]);
+		}
+	}
+
+	for (i = 0; i < len1; i++) {
+		for (j = 0; j < len2; j++) {
+			printf("%d \t ", mat[i][j]);
+		}
+		printf("\n");
+	}
+
+	printf("\n");
+	printf("\n");
+
+	for (i = 0; i < len1; i++) {
+		for (j = 0; j < len2; j++) {
+			//
+			//if (i == 0 || j == 0) {
+			//	mat[j][i] = 0;
+			//	continue;
+			//}
+			//если буква массива 1 = буква массива 2 прибавляем счётчик
+
+
+			if (*(str1 + i) == *(str2 + j)) {
+				if (i == 0) mat[i][j] = 1;
+
+				if (i > 0)
+					mat[i][j] = 1 + mat[i - 1][j];
+			}
+			else {
+				mat[i][j] = 0;
+			}
+
+			if (j > 0) {
+				mat[i][j] = mat[i][j - 1];
+			}
+
+		}
+	}
+
+	for (i = 0; i < len1; i++) {
+		for (j = 0; j < len2; j++) {
+			printf("%d \t ", mat[i][j]);
+		}
+		printf("\n");
+	}
+
 
 }
 
+//длина строки - нужна чтобы создать матрицу правильного размера
 unsigned strLen(char *str) {
 	unsigned i = 0;
 	do {
