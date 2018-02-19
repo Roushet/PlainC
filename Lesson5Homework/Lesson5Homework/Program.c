@@ -24,6 +24,12 @@ int IsOpenBracket(char c);
 int IsCloseBracket(char c);
 char getReverceBracket(char c);
 
+void Solution6();
+int * queue_create(const unsigned size);
+void queue_destroy(int *queue);
+void queue_push(int *queue, int value);
+int queue_pop(int *queue);
+
 //Владимир Евдокимов
 
 
@@ -40,7 +46,6 @@ char getReverceBracket(char c);
 
 //5. **Реализовать алгоритм перевода из инфиксной записи арифметического выражения в постфиксную.
 
-//6. *Реализовать очередь.
 
 
 int main() {
@@ -62,6 +67,9 @@ int main() {
 			break;
 		case 3:
 			Solution3();
+			break;
+		case 6:
+			Solution6();
 			break;
 
 		default:
@@ -153,47 +161,56 @@ void Solution3() {
 
 	char string[50];
 	char *char_stack = stack_create(50);
+	char current;
+	int errFlag = 0;
 
-
-	printf("please input formula: \n");
+	printf("Please input formula (or just brackets): \n");
 
 	scanf("%s", &string);
 
-
-
 	unsigned i = 0;
-	printf("FORMULA: ");
+	//printf("FORMULA: ");
 
-	do {
-		printf("%c", *(string + i));
+	//do {
+	//	printf("%c", *(string + i));
 
-		i++;
-	} while (*(string + i) != '\0');
+	//	i++;
+	//} while (*(string + i) != '\0');
 
 	i = 0;
 
 	do {
-		printf("%с", *(string + i));
+		current = *(string + i);
+		//printf("%с", current); //почему то тут всегда печатает ё 
 
-		if (IsOpenBracket(*(string + i)))
-			stack_push(char_stack, *(string + i));
+		if (IsOpenBracket(current))
+			stack_push(char_stack, current);
 
-		if (IsCloseBracket(*(string + i))) {
-			if (getReverceBracket(*(string + i)) != stack_pop(char_stack))
+		if (IsCloseBracket(current)) {
+			if (getReverceBracket(current) != stack_pop(char_stack))
 			{
-				printf("Brackets does not comply. Fail.\n");
+				printf("Error. Brackets does not comply. Fail.\n");
+				errFlag = 1;
 				break;
 			}
 		}
 		i++;
+	} while (current != '\0');
 
-		//сделать ок для формулы
-	} while (*(string + i) != '\0');
+	if (stack_pop == '\0') {
+		printf("Error. Brackets does not comply. Fail.\n");
+		errFlag = 1;
+	}
 
+
+	//printf("POP: %c\n", stack_pop(char_stack));
+
+	if (errFlag == 0)
+		printf("OK: Formula does not contain bracket errors");
+
+	// очищаем память
+	stack_destroy(char_stack);
 	printf("\n");
-
-
-
 }
 int IsOpenBracket(char c) {
 	char *openbrackets = "{[(";
@@ -221,18 +238,18 @@ int IsCloseBracket(char c) {
 	return 0;
 }
 
-//закрывающая на открывающую
-//приходит закрывающая
+//Заменяет закрывающую на ответную открывающую
+//Принимает закрывающаю
 char getReverceBracket(char c) {
 	char *openbrackets = "{[(";
 	char *closebrackets = "}])";
 
-	printf("\n");
+	//printf("\n");
 
 	unsigned i = 0;
 	do {
-		printf("%c vs ", c);
-		printf("%c", *(closebrackets + i));
+		//printf("%c vs ", c);
+		//printf("%c", *(closebrackets + i));
 
 		if (c == (*(closebrackets + i)))
 			return (*(openbrackets + i));
@@ -240,4 +257,54 @@ char getReverceBracket(char c) {
 	} while (*(closebrackets + i) != '\0');
 
 	return '\0';
+}
+
+//6. *Реализовать очередь.
+
+void Solution6() {
+	int *int_queue = queue_create(50);
+
+	queue_push(int_queue, 10);
+	queue_push(int_queue, 20);
+	queue_push(int_queue, 30);
+	queue_push(int_queue, 40);
+	//--
+	printf("%d\n", queue_pop(int_queue));
+	printf("%d\n", queue_pop(int_queue));
+	printf("%d\n", queue_pop(int_queue));
+	printf("%d\n", queue_pop(int_queue));
+	//тут будет ошибка
+	printf("%d\n", queue_pop(int_queue));
+
+	//сделать обработку ошибок
+	//сделать перевод каретки на начало
+
+}
+
+int *queue_create(const unsigned size) {
+
+	int *q = (int *)malloc(sizeof(int) * (size + 2));
+	q[0] = 2; //запись по умолчанию на позиции 2
+	q[1] = 2; //чтение по умолчанию на позиции 2
+	return q;
+
+}
+void queue_destroy(int *queue) {
+	free(queue);
+}
+
+void queue_push(int *queue, int value) {
+	//записываем справа
+	queue[queue[1]] = value;
+	queue[1]++;
+}
+
+int queue_pop(int *queue) {
+	//читаем слева
+	
+	int value = queue[queue[0]];
+	
+	queue[0]++;
+
+	return value;
 }
