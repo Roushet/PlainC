@@ -7,12 +7,21 @@
 #include <limits.h>
 #include <stdint.h>
 
+# define ASSERT(cond, msg) \
+{\
+	if (!(cond)) \
+	{\
+		fprintf(stderr, msg); \
+		exit(-1); \
+	}\
+}
+
 void Solution1();
 
 void array_stack_push(int var);
 int array_stack_pop();
 
-//void Solution2();
+void Solution2();
 void Solution3();
 
 char * stack_create(const unsigned size);
@@ -63,7 +72,7 @@ int main() {
 			Solution1();
 			break;
 		case 2:
-			//Solution2();
+			Solution2();
 			break;
 		case 3:
 			Solution3();
@@ -135,15 +144,19 @@ int array_stack_pop() {
 
 char * stack_create(const unsigned size) {
 	char *p = (char *)malloc(sizeof(char) * (size + 1));
+	ASSERT(p != NULL, "Failed to allocate memory");
 	p[0] = 1;
 	return p;
 }
 
 void stack_destroy(char *stack) {
+	ASSERT(stack != NULL, "Stack does not exist");
 	free(stack);
 }
 
 void stack_push(char *stack, char value) {
+	ASSERT(stack != NULL, "Stack does not exist");
+
 	stack[stack[0]] = value;
 	stack[0]++;
 }
@@ -153,6 +166,21 @@ char stack_pop(char *stack) {
 	char value = stack[stack[0]];
 	return value;
 }
+
+//2. Добавить в программу “реализация стека на основе односвязного списка” проверку на 
+//выделение памяти.Если память не выделяется, то выводится соответствующее сообщение.Постарайтесь создать 
+//ситуацию, когда память не будет выделяться(добавлением большого количества данных).
+
+void Solution2() {
+	//1 410 065 408
+	char *char_stack = stack_create(10000000000);
+	stack_push(char_stack, "J");
+
+	//printf("POP: %c!\n", stack_pop(char_stack));
+
+}
+
+
 
 //3. Написать программу, которая определяет, является ли введенная скобочная последовательность 
 //правильной.Примеры правильных скобочных выражений : (), ([])(), {}(), ([{}]), неправильных — )(, ())({ ), (, ]) }), ([(]) для скобок[, (, { .
@@ -197,19 +225,21 @@ void Solution3() {
 		i++;
 	} while (current != '\0');
 
-	if (stack_pop == '\0') {
-		printf("Error. Brackets does not comply. Fail.\n");
+	//printf("POP: %c!\n", stack_pop(char_stack));
+
+	//если в стеке остались открывающие скобки - ошибка
+	if (stack_pop(char_stack) != '\0') {
 		errFlag = 1;
+		printf("Error. Brackets does not comply. Fail.\n");
 	}
 
-
-	//printf("POP: %c\n", stack_pop(char_stack));
 
 	if (errFlag == 0)
 		printf("OK: Formula does not contain bracket errors");
 
 	// очищаем память
 	stack_destroy(char_stack);
+	errFlag = 0;
 	printf("\n");
 }
 int IsOpenBracket(char c) {
@@ -262,18 +292,17 @@ char getReverceBracket(char c) {
 //6. *Реализовать очередь.
 
 void Solution6() {
-	int *int_queue = queue_create(50);
+	int *int_queue = queue_create(3);
 
 	queue_push(int_queue, 10);
 	queue_push(int_queue, 20);
 	queue_push(int_queue, 30);
+	printf("%d\n", queue_pop(int_queue));
 	queue_push(int_queue, 40);
 	//--
 	printf("%d\n", queue_pop(int_queue));
 	printf("%d\n", queue_pop(int_queue));
 	printf("%d\n", queue_pop(int_queue));
-	printf("%d\n", queue_pop(int_queue));
-	//тут будет ошибка
 	printf("%d\n", queue_pop(int_queue));
 
 	//сделать обработку ошибок
@@ -282,29 +311,65 @@ void Solution6() {
 }
 
 int *queue_create(const unsigned size) {
+	//ASSERT(size > 0, "Bad size for queue");
+	int *q = (int *)malloc(sizeof(int) * (size + 4));
+	//ASSERT(q != NULL, "Failed to allocate memory for queue");
 
-	int *q = (int *)malloc(sizeof(int) * (size + 2));
-	q[0] = 2; //запись по умолчанию на позиции 2
-	q[1] = 2; //чтение по умолчанию на позиции 2
+	q[0] = size; //записываем размер очереди, чтобы использовать его как счётчик остатка места
+	q[1] = size; //записываем размер очереди, чтобы манипулировать с курсорами
+	q[2] = 4; //чтение по умолчанию на позиции 4
+	q[3] = 4; //запись по умолчанию на позиции 4
+
 	return q;
 
 }
 void queue_destroy(int *queue) {
+	ASSERT(queue != NULL, "Cannot destroy queue. Queue does not exist");
+
 	free(queue);
 }
 
 void queue_push(int *queue, int value) {
-	//записываем справа
-	queue[queue[1]] = value;
-	queue[1]++;
+	ASSERT(queue[0] > 0, "Cannot push to queue. Queue overflow");
+
+	if (queue[3] <= queue[1] + 4 - 1) //если позиция записи меньше или равна размера очереди
+	{
+		queue[queue[3]] = value;
+		queue[3]++;
+		queue[0]--;
+	}
+
+	if (queue[3] > queue[1] + 4 - 1) { //если позиция записи больше размера очереди - переносим каретку в начало
+		if (queue[2] > 4) //проверяем позицию чтения, если чтение стоит на точке старта писать нельзя
+		{
+			queue[3] = 4;
+			queue[queue[3]] = value;
+			queue[3]++;
+			queue[0]--;
+		}
+
+	}
 }
+
 
 int queue_pop(int *queue) {
 	//читаем слева
-	
-	int value = queue[queue[0]];
-	
-	queue[0]++;
+	ASSERT(queue != NULL, "Cannot pop from queue. Queue does not exist");
+	int value;
+
+	if (queue[2] > queue[1] + 4 - 1) { //если позиция чтения больше размера очереди - переносим каретку в начало
+			queue[2] = 4;
+			value = queue[queue[2]];
+			queue[2]++;
+			queue[0]++;
+
+		}
+	else
+	{
+		value = queue[queue[2]];
+		queue[2]++;
+		queue[0]++;
+	}
 
 	return value;
 }
