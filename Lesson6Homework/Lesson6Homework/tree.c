@@ -11,7 +11,7 @@ struct STree * tree_create(const int value)
 	tree->left = NULL;
 	tree->right = NULL;
 	tree->parent = NULL;
-
+	//
 	return tree;
 }
 
